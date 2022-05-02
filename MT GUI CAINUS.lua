@@ -529,6 +529,13 @@ main.Button({
 		end
 		print("________________________")
 	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Prints who have the Flight and Elder Wand Gamepasses (Press F9 to open Console)"
+            })
+        end
+    }
 })
 
 main.Button({
@@ -557,6 +564,13 @@ main.Button({
 		wait(0.1)
 		print("anti kick enabled")
 	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "THIS NEEDS TO BE ACTIVATED TO RUN MOST FEATURES"
+            })
+        end
+    }
 })
 
 main.Button({
@@ -566,6 +580,13 @@ main.Button({
 		wait(0.1)
 		print("auto clash enabled")
 	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Fires a remote to advance clashes"
+            })
+        end
+    }
 })
 
 main.Button({
@@ -586,7 +607,14 @@ main.Button({
     		end
 		end)
 
-	end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Clicks/Triggers the white circles to advance clashes"
+            })
+        end
+    }
 })
 
 main.Button({
@@ -669,7 +697,7 @@ character.Slider({
 local autohealstate = false
 
 character.Toggle({
-	Text = "Auto Heal Public (Run Public Wandless First)",
+	Text = "Auto Heal Public",
     Callback = function(state)
 		autohealstate = state
 
@@ -686,7 +714,14 @@ character.Toggle({
 			end
 			wait()
 		end
-    end
+    end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Run Public Wandless Script First"
+            })
+        end
+    }
 })
 
 local heal2 = false
@@ -732,11 +767,25 @@ character.Toggle({
 			end
 			wait()
 		end
-	end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "For this auto heal, the Public Wandless Script isn't required, thus making it run more smoothly as the Wandless heal has a bit more delay than this one"
+            })
+        end
+    }
 })
 
 misc.ColorPicker({
-	Text = "Main Theme Color (WIP, NOT WORKING)",
+	Text = "Main Theme Color",
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Wip, Not Working"
+            })
+        end
+    }
 })	
 
 local toggle = false 
@@ -774,7 +823,7 @@ character.Toggle({
 local invisibleState
 
 character.Toggle({
-	Text = "Invisible (WIP, NOT WORKING)",
+	Text = "Invisible",
 	Callback = function(state)
 		invisibleState = state
 		while invisibleState ~= false do
@@ -787,7 +836,14 @@ character.Toggle({
 			game:GetService("InsertService").Events.toggleFlight:FireServer(ohTable1)
 			wait()
 		end
-	end	
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Wip, Not Working"
+            })
+        end
+    }
 })
 
 local blinkaurorState = false
@@ -912,24 +968,37 @@ auras.Toggle({
 })
 
 tps.Button({
-	Text = "Village Spawn (WIP, NOT WORKING)",
+	Text = "Village Spawn",
 	Callback = function()
 		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.New(-545.775269, 345.086761, 1195.46204)
 		game.Players.LocalPlayer.Character.Torso.CFrame = CFrame.New(-545.775269, 345.086761, 1195.46204)
 		game.Players.LocalPlayer.Character.HumanoidRootPart.Position = Vector3.New(-554.207, 345.087, 1191.44)
 		game.Players.LocalPlayer.Character.Torso.Position = Vector3.New(-554.207, 345.087, 1191.44)
-	end	
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Wip, Not Working"
+            })
+        end
+    }
 })
 
 misc.Button({
-	Text = "Delete Gui (WIP, NOT WORKING)"
-	
+	Text = "Delete Gui",
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Wip, Not Working"
+            })
+        end
+    }	
 })
 
 local infernumToggle = false
 
 fun.Toggle({
-	Text = "Infernums (Run Public Wandless)",
+	Text = "Infernums",
 	Callback = function(state)
 		infernumToggle = state	
 		if infernumToggle ~= false then
@@ -962,13 +1031,20 @@ fun.Toggle({
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 			wait(0.5)
 		end	
-	end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Run Public Wandless Script First"
+            })
+        end
+    }
 })
 
 local pruinaToggle = false
 
 fun.Toggle({
-	Text = "Pruina Tempestatises (Run Public Wandless)",
+	Text = "Pruina Tempestatises",
 	Callback = function(state)
 		pruinaToggle = state	
 		if pruinaToggle ~= false then
@@ -1001,16 +1077,42 @@ fun.Toggle({
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 			wait(0.5)
 		end	
-	end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Run Public Wandless Script First"
+            })
+        end
+    }
 })
 
 local spell = ""
+local target = ""
 
 spl.TextField({
 	Text = "Spell Name",
 	Callback = function(s)
 		spell = string.lower(s)
 	end
+})
+
+spl.TextField({
+	Text = "Target Name",
+	Callback = function(s)
+		for _, player in pairs(game.Players:GetChildren()) do
+			if player.DisplayName == s then
+				target = player
+			end
+		end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Put the Display Name of your Target"
+            })
+        end
+    }
 })
 
 spl.Button({
@@ -1053,3 +1155,42 @@ spl.Toggle({
 	end
 })
 
+spl.Button({
+	Text = "Cast Spell on Target",
+	Callback = function()
+		game.Players:Chat(spell)
+
+		local args = {
+			[1] = {
+				["hitCf"] = target.Character.Head.CFrame,
+				["actor"] = target.Character,
+				["spellName"] = spell
+			}
+		}
+		
+		game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+	end
+})
+
+local loopcast2 = false
+
+spl.Toggle({
+	Text = "Loop Cast on Target",
+	Callback = function(state)
+		loopcast2 = state
+		if loopcast2 ~= false then game.Players:Chat(spell) end
+
+		while loopcast2 ~= false do
+			local args = {
+				[1] = {
+					["hitCf"] = target.Character.Head.CFrame,
+					["actor"] = target.Character,
+					["spellName"] = spell
+				}
+			}
+			
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			wait(0.5)
+		end
+	end
+})
