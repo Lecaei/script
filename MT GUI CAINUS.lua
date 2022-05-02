@@ -62,9 +62,11 @@ local ui = library.Load({
 
 local main = ui.New({Title = "Main"})
 local character = ui.New({Title = "Character"})
-local misc = ui.New({Title = "Misc"})
 local auras = ui.New({Title = "Auras"})
-
+local fun = ui.New({Title = "Fun"})
+local spl = ui.New({Title = "Spells"})
+local tps = ui.New({Title = "Teleports"})
+local misc = ui.New({Title = "Misc"})
 --
 
 local function spamwand()
@@ -419,15 +421,25 @@ local function flightgive()
 		end
 	end
 end
+
+local fpl = {}
+local epl = {}
 	
 local function checkplayers()
 	for _,player in pairs(game.Players:GetChildren()) do
 		for _,tools in pairs(player.Backpack:GetChildren()) do
 			if tools.Name == "Flight" then
-				print(player.Name .. " has Flight")
+				table.insert(fpl, player)
 			end
+		end
+	end
+end	
+
+local function checkplayer2()
+	for _,player in pairs(game.Players:GetChildren()) do
+		for _,tools in pairs(player.Backpack:GetChildren()) do
 			if tools.Name == "Elder Wand" then
-				print(player.Name .. " has The Elder Wand")
+				table.insert(epl, player)
 			end
 		end
 	end
@@ -464,7 +476,7 @@ local function checkif()
 	for _,players in pairs(game.Players:GetPlayers()) do
 		for _,users in pairs(gameAdmins) do
 			if players.UserId == users then
-				warn(players.Name .. " -- " .. users)
+				warn(players.Name .. " -- Display: " .. players.DisplayName .. " -- " .. users .. " || GAME ADMIN *")
 			end
 		end
 	end	
@@ -474,7 +486,7 @@ local function checkift()
 	for _,players in pairs(game.Players:GetPlayers()) do
 		for _,user in pairs(respected) do
 			if players.UserId == user then
-				warn(players.Name .. " -- " .. user)
+				warn(players.Name .. " -- Display: " .. players.DisplayName .. " -- " .. user .. " || RESPECTED PLAYER *")
 			end
 		end
 	end	
@@ -501,6 +513,21 @@ main.Button({
 	Text = "Check Players",
 	Callback = function()
 		checkplayers()
+		checkplayer2()
+		wait(0.1)
+		print("________________________")
+		print("PEOPLE WHO HAVE THE ELDER WAND :")
+		for _,elderuser in pairs(epl) do
+			print("USER NAME - " .. elderuser.Name .. " / DISPLAY NAME - " .. elderuser.DisplayName .. " has an Elder Wand")
+		end
+		print("________________________")
+		wait(1)
+		print("________________________")
+		print("PEOPLE WHO HAVE FLIGHT :")
+		for _,flightuser in pairs(fpl) do
+	 		print("USER NAME - " .. flightuser.Name .. " / DISPLAY NAME - " .. flightuser.DisplayName .. " has Flight")
+		end
+		print("________________________")
 	end,
 })
 
@@ -539,6 +566,27 @@ main.Button({
 		wait(0.1)
 		print("auto clash enabled")
 	end,
+})
+
+main.Button({
+	Text = "Auto Clash (More 'Legit' Way)",
+	Callback = function()
+		local Players = game:GetService("Players")
+		local RunService = game:GetService("RunService")
+
+		local Player = Players.LocalPlayer
+		local PlayerGui = Player.PlayerGui
+
+		PlayerGui.DescendantAdded:Connect(function(Descendant)
+    		if Descendant.Name == "marker" then
+    	    	repeat
+            	firesignal(Descendant.MouseButton1Click)
+        		RunService.RenderStepped:Wait()
+        	until not Descendant:IsDescendantOf(PlayerGui)
+    		end
+		end)
+
+	end
 })
 
 main.Button({
@@ -667,7 +715,7 @@ character.Toggle({
 			while autounstun ~= false do
 				if game.Players.LocalPlayer.Character.Humanoid.Sit == true then
 					game.Players.LocalPlayer.Character.Humanoid.Sit = false
-				end
+				end	
 
 				if game.Players.LocalPlayer.Character.Humanoid.PlatformStand == true then
 					game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
@@ -834,9 +882,144 @@ auras.Toggle({
 					["flightType"] = "Auror"
 					}
 			
-				game:GetService("InsertService").Events.toggleFlight:FireServer(ohTable1)	
+				game:GetService("InsertService").Events.toggleFlight:FireServer(ohTable1)
+				
 		end
 	end
 })
 
+tps.Button({
+	Text = "Village Spawn (WIP, NOT WORKING)",
+	Callback = function()
+		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.New(-545.775269, 345.086761, 1195.46204)
+		game.Players.LocalPlayer.Character.Torso.CFrame = CFrame.New(-545.775269, 345.086761, 1195.46204)
+		game.Players.LocalPlayer.Character.HumanoidRootPart.Position = Vector3.New(-554.207, 345.087, 1191.44)
+		game.Players.LocalPlayer.Character.Torso.Position = Vector3.New(-554.207, 345.087, 1191.44)
+	end	
+})
 
+misc.Button({
+	Text = "Delete Gui (WIP, NOT WORKING)"
+	
+})
+
+local infernumToggle = false
+
+fun.Toggle({
+	Text = "Infernums Run Public Wandless)",
+	Callback = function(state)
+		infernumToggle = state	
+		if infernumToggle ~= false then
+		local args = {
+			[1] = "infernum",
+			[2] = "System"
+		}
+
+		game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+		game.Players:Chat("infernum")
+		
+		local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Wand")
+		if not tool then tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Elder Wand") end
+
+		game.Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
+
+		else
+			game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+
+		end
+
+		while infernumToggle ~= false do
+			local args = {
+				[1] = {
+					["hitCf"] = game:GetService("Players").LocalPlayer.Character.Head.CFrame,
+					["actor"] = game:GetService("Players").LocalPlayer.Character,
+					["spellName"] = "infernum"
+				}
+			}
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			wait(0.5)
+		end	
+	end
+})
+
+local pruinaToggle = false
+
+fun.Toggle({
+	Text = "Pruina Tempestatises (Run Public Wandless)",
+	Callback = function(state)
+		pruinaToggle = state	
+		if pruinaToggle ~= false then
+		local args = {
+			[1] = "pruina tempestatis",
+			[2] = "System"
+		}
+
+		game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+		game.Players:Chat("pruina tempestatis")
+		
+		local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Wand")
+		if not tool then tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Elder Wand") end
+
+		game.Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
+
+		else
+			game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+
+		end
+
+		while pruinaToggle ~= false do
+			local args = {
+				[1] = {
+					["hitCf"] = game:GetService("Players").LocalPlayer.Character.Head.CFrame,
+					["actor"] = game:GetService("Players").LocalPlayer.Character,
+					["spellName"] = "pruina tempestatis"
+				}
+			}
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			wait(0.5)
+		end	
+	end
+})
+
+local splTar = false
+local mouse = game.Players.LocalPlayer:GetMouse()
+local target = {}
+local targetplr = table.concat(target, " ")
+local plr = nil
+local p = game.Players
+
+spl.Toggle({
+	Text = "Mouse Target (MUST BE TOGGLED ON TO GET TARGET, WIP, NOT WORKING)",
+	Callback = function(state)
+		splTar = state
+		mouse.Button1Down:Connect(function()
+			if mouse.Target and mouse.Target.Parent and splTar ~= false then
+				plr = p:GetPlayerFromCharacter(mouse.Target.Parent)
+				if plr ~= nil then
+					table.insert(target, plr.Name)
+					else
+					plr = p:GetPlayerFromCharacter(mouse.Target.Parent.Parent)
+					if plr ~= nil then
+						table.insert(target, plr.Name)
+					end
+				end
+			end
+		end)	
+	end
+})
+
+local tar = spl.TextField({
+	Text = "Displays Target",
+})
+
+while splTar ~= false do
+	tar:SetText(targetplr)
+	wait(0.1)
+end
+
+spl.Button({
+	Text = "Print Target (Test)",
+	Callback = function()
+		print(targetplr)
+	end
+})
