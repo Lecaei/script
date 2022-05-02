@@ -1087,8 +1087,11 @@ fun.Toggle({
     }
 })
 
+local spelllist = {"duro", "ebublio", "glacius", "impedimenta", "incarcerous", "levicorpus", "locomotor wibbly", "petrificus totalus", }
+
 local spell = ""
 local target = ""
+local autocomplete = ""
 
 spl.TextField({
 	Text = "Spell Name",
@@ -1097,22 +1100,30 @@ spl.TextField({
 	end
 })
 
-spl.TextField({
+local t = spl.TextField({
 	Text = "Target Name",
 	Callback = function(s)
-		for _, player in pairs(game.Players:GetChildren()) do
-			if player.DisplayName == s then
-				target = player
+		for i,v in pairs(game.Players:GetPlayers()) do  -- iterating though players
+			if v.DisplayName:lower():sub(1,#s) == s:lower() then	-- checking to see if player name matches the provided string
+				target = v
+				autocomplete = v.DisplayName
 			end
 		end
 	end,
 	Menu = {
         Information = function(self)
             ui.Banner({
-                Text = "Put the Display Name of your Target"
+                Text = "Put the Display Name of your Target, Also has Auto Complete Name (Use Auto Complete Button)"
             })
         end
     }
+})
+
+spl.Button({
+	Text = "Auto Complete Target Name",
+	Callback = function()
+		t:SetText(autocomplete)
+	end
 })
 
 spl.Button({
