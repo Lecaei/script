@@ -790,29 +790,6 @@ character.Toggle({
 	end	
 })
 
-local spellValue = ""
-
-character.TextField({
-	Text = "Spell Name",
-	Callback = function(spell)
-		spellValue = string.lower(spell)
-	end
-})
-
-character.Button({
-	Text = "Print Spell (TEST)",
-	Callback = function()
-		print(spellValue .. " - Spell Name")
-	end
-})
-
-character.Button({
-	Text = "Cast Spell To Self (WIP, NOT WORKING)",
-	Callback = function()
-
-end
-})
-
 local blinkaurorState = false
 
 auras.Toggle({
@@ -1027,45 +1004,52 @@ fun.Toggle({
 	end
 })
 
-local splTar = false
-local mouse = game.Players.LocalPlayer:GetMouse()
-local target = {}
-local targetplr = table.concat(target, " ")
-local plr = nil
-local p = game.Players
+local spell = ""
 
-spl.Toggle({
-	Text = "Mouse Target (MUST BE TOGGLED ON TO GET TARGET, WIP, NOT WORKING)",
-	Callback = function(state)
-		splTar = state
-		mouse.Button1Down:Connect(function()
-			if mouse.Target and mouse.Target.Parent and splTar ~= false then
-				plr = p:GetPlayerFromCharacter(mouse.Target.Parent)
-				if plr ~= nil then
-					table.insert(target, plr.Name)
-					else
-					plr = p:GetPlayerFromCharacter(mouse.Target.Parent.Parent)
-					if plr ~= nil then
-						table.insert(target, plr.Name)
-					end
-				end
-			end
-		end)	
+spl.TextField({
+	Text = "Spell Name",
+	Callback = function(s)
+		spell = string.lower(s)
 	end
 })
-
-local tar = spl.TextField({
-	Text = "Displays Target",
-})
-
-while splTar ~= false do
-	tar:SetText(targetplr)
-	wait(0.1)
-end
 
 spl.Button({
-	Text = "Print Target (Test)",
+	Text = "Cast Spell To Self",
 	Callback = function()
-		print(targetplr)
+		game.Players:Chat(spell)
+
+		local args = {
+			[1] = {
+				["hitCf"] = game.Players.LocalPlayer.Character.Head.CFrame,
+				["actor"] = game:GetService("Players").LocalPlayer.Character,
+				["spellName"] = spell
+			}
+		}
+		
+		game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 	end
 })
+
+local loopcast = false
+
+spl.Toggle({
+	Text = "Loop Cast To Self",
+	Callback = function(state)
+		loopcast = state
+		if loopcast ~= false then game.Players:Chat(spell) end
+
+		while loopcast ~= false do
+			local args = {
+				[1] = {
+					["hitCf"] = game.Players.LocalPlayer.Character.Head.CFrame,
+					["actor"] = game:GetService("Players").LocalPlayer.Character,
+					["spellName"] = spell
+				}
+			}
+			
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			wait(0.5)
+		end
+	end
+})
+
