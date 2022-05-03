@@ -29,9 +29,12 @@ local respected = {
     407567340, -- robloxwizard20005--
 }
 
+local kickifadmin = true
+local kickifres = true
+
 game.Players.PlayerAdded:Connect(function(plr)
 	for i, v in pairs(gameAdmins) do
-		if plr.UserId == v then
+		if plr.UserId == v and kickifadmin == true then
 			game.Players.LocalPlayer:Kick("Admin joined -- " .. v)
 		end	
 	end
@@ -40,7 +43,7 @@ end)
 
 game.Players.PlayerAdded:Connect(function(plr)
 	for i, v in pairs(respected) do
-		if plr.UserId == v then
+		if plr.UserId == v and kickifres == true then
 			game.Players.LocalPlayer:Kick("Respected player joined -- " .. v)
 		end	
 	end
@@ -67,6 +70,7 @@ local fun = ui.New({Title = "Fun"})
 local spl = ui.New({Title = "Spells"})
 local tps = ui.New({Title = "Teleports"})
 local misc = ui.New({Title = "Misc"})
+local set = ui.New({Title = "Settings"})
 --
 
 local function spamwand()
@@ -1142,7 +1146,7 @@ spl.Button({
 	end
 })
 
-spl.TextField({
+set.TextField({
 	Text = "Auto Spell Delay (MUST BE GREATER THAN 0)",
 	Callback = function(s)
 		if s ~= 0 then
@@ -1158,7 +1162,7 @@ spl.Button({
 
 		local args = {
 			[1] = {
-				["hitCf"] = game.Players.LocalPlayer.Character.Head.CFrame,
+				["hitCf"] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame,
 				["actor"] = game:GetService("Players").LocalPlayer.Character,
 				["spellName"] = spell
 			}
@@ -1179,7 +1183,7 @@ spl.Toggle({
 		while loopcast ~= false do
 			local args = {
 				[1] = {
-					["hitCf"] = game.Players.LocalPlayer.Character.Head.CFrame,
+					["hitCf"] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame,
 					["actor"] = game:GetService("Players").LocalPlayer.Character,
 					["spellName"] = spell
 				}
@@ -1198,7 +1202,7 @@ spl.Button({
 
 		local args = {
 			[1] = {
-				["hitCf"] = target.Character.Head.CFrame,
+				["hitCf"] = target.Character.HumanoidRootPart.CFrame,
 				["actor"] = target.Character,
 				["spellName"] = spell
 			}
@@ -1219,7 +1223,7 @@ spl.Toggle({
 		while loopcast2 ~= false do
 			local args = {
 				[1] = {
-					["hitCf"] = target.Character.Head.CFrame,
+					["hitCf"] = target.Character.HumanoidRootPart.CFrame,
 					["actor"] = target.Character,
 					["spellName"] = spell
 				}
@@ -1229,4 +1233,65 @@ spl.Toggle({
 			wait(spelldelay)
 		end
 	end
+})
+
+spl.Button({
+	Text = "Cast Spell on Everyone (Unstable)",
+	Callback = function()
+		game.Players:Chat(spell)
+
+		for _,plr in pairs(game.Players:GetPlayers()) do
+			local args = {
+				[1] = {
+					["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
+					["actor"] = plr.Character,
+					["spellName"] = spell
+				}
+			}
+			
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+		end
+	end
+})
+
+local loopeveryone = false
+
+spl.Toggle({
+	Text = "Loop Cast Spell on Everyone (Unstable)",
+	Callback = function(s)
+		loopeveryone = s
+		
+		if loopeveryone ~= false then game.Players:Chat(spell) end
+
+		while loopeveryone ~= false do
+			for _,plr in pairs(game.Players:GetPlayers()) do
+				local args = {
+					[1] = {
+						["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
+						["actor"] = plr.Character,
+						["spellName"] = spell
+					}
+				}
+				
+				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			end
+			wait(spelldelay)
+		end
+	end
+})
+
+set.Toggle({
+	Text = "Kick when Admin Joins",
+	Callback = function(s)
+		kickifadmin = s
+	end,
+	Enabled = true
+})
+
+set.Toggle({
+	Text = "Kick when a Respected Player Joins",
+	Callback = function(s)
+		kickifres = s
+	end,
+	Enabled = true
 })
