@@ -897,7 +897,7 @@ character.Toggle({
 
 local blinkaurorState = false
 
-auras.Toggle({
+character.Toggle({
 	Text = "Blink (Auror)",
 	Callback = function(state)
 		blinkaurorState = state
@@ -934,7 +934,7 @@ auras.Toggle({
 
 local blinkdeathState = false
 
-auras.Toggle({
+character.Toggle({
 	Text = "Blink (Death Eater)",
 	Callback = function(state)
 		blinkdeathState = state
@@ -969,7 +969,7 @@ auras.Toggle({
 	end
 })
 
-auras.Toggle({
+character.Toggle({
 	Text = "Flight Aura (Auror)",
 	Callback = function(state)
 		if state == true then
@@ -992,7 +992,7 @@ auras.Toggle({
 	end
 })
 
-auras.Toggle({
+character.Toggle({
 	Text = "Flight Aura (Death Eater)",
 	Callback = function(state)
 		if state == true then
@@ -1032,6 +1032,77 @@ tps.Button({
         end
     }
 })
+
+local distance = 60
+
+
+auras.TextField({
+	Text = "Aura Distance",
+	Callback = function(a)
+		distance = tonumber(a)
+	end,
+	Menu = { 
+        Information = function(self)
+            ui.Banner({
+                Text = "Sets the distance when players will be affected by the spell auras, affects distance equal to number and less than, Def = 60"
+            })
+        end
+    }
+})
+
+
+
+local aura1 = false
+local yourself = game.Players.LocalPlayer.UserId
+local spellaura = ""
+
+auras.TextField({
+	Text = "Spell Name",
+	Callback = function(s)
+		spellaura = string.lower(s)
+	end,
+	Menu = { 
+        Information = function(self)
+            ui.Banner({
+                Text = "Sets the spell casted when Spell Aura is Toggled on"
+            })
+        end
+    }
+})
+
+auras.Toggle({
+	Text = "Spell Aura",
+	Callback = function(s)
+		aura1 = s
+		if aura1 ~= false then game.Players:Chat(spellaura) end
+	end,
+	Menu = { 
+        Information = function(self)
+            ui.Banner({
+                Text = "Sort of wonky as of now, doesn't allow you to cast while toggled on, isn't instantaneous, applies spell to players within a certain distance"
+            })
+        end
+    }
+})
+
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	for _, player in pairs(game.Players:GetPlayers()) do
+		if player:DistanceFromCharacter(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) < 60 and aura1 ~= false and player.UserId ~= yourself then
+			local args = {
+				[1] = {
+					["hitCf"] = player.Character.Head.CFrame,
+					["actor"] = player.Character,
+					["spellName"] = spellaura
+				}
+			}
+			repeat
+				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+				wait(0.25)
+			until aura1 ~= true or player:DistanceFromCharacter(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) < distance or player.Character.Humanoid.Health == 0 or not player.Character
+		end
+	end
+end)
 
 misc.Button({
 	Text = "Delete Gui",
