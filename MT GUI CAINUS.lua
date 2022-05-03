@@ -1035,13 +1035,9 @@ tps.Button({
 
 misc.Button({
 	Text = "Delete Gui",
-	Menu = {
-        Information = function(self)
-            ui.Banner({
-                Text = "Wip, Not Working"
-            })
-        end
-    }	
+	Callback = function()
+		game:GetService("CoreGui")["Magic Training"]:Destroy()
+	end
 })
 
 local infernumToggle = false
