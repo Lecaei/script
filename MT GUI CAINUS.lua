@@ -1016,6 +1016,53 @@ character.Toggle({
 	end
 })
 
+local godmodestate = false
+
+character.Toggle({
+	Text = "God Mode",
+	Callback = function(s)
+		godmodestate = s
+	end,
+	Menu = { 
+        Information = function(self)
+            ui.Banner({
+                Text = "Really buggy, doesn't work most of the time as of now"
+            })
+        end
+    }	
+})
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if godmodestate ~= false then
+		local chr = game.Players.LocalPlayer.Character
+		local hum = chr:FindFirstChild("Humanoid")
+
+		if hum and hum.Health > 0 then
+			local root = chr.HumanoidRootPart
+			local cam = game.Workspace.CurrentCamera
+
+			local cf = cam.CFrame
+			local lv = cf.lookVector
+			local rv = cf.rightVector
+
+			local dir1 = lv
+			local dir2 = -lv
+			local dir3 = -rv
+			local dir4 = -rv
+
+			local dirs = {dir1, dir2, dir3, dir4}
+
+			for _, dir in ipairs(dirs) do
+				game:GetService("InsertService").Events.protego:FireServer({
+                    ["rootPos"] = root.CFrame.Position,
+                    ["distance"] = 0,
+                    ["dir"] = dir,
+                })
+			end
+		end	
+	end
+end)
+
 tps.Button({
 	Text = "Village Spawn",
 	Callback = function()
