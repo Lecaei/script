@@ -55,7 +55,7 @@ local coloroverride = {}
 local ui = library.Load({
 	Title = "Magic Training",
 	Style = 1,
-	Theme = "Mocha",
+	Theme = "Dark",
 	SizeX = 500,
 	SizeY = 350,
 })
@@ -747,6 +747,19 @@ character.Toggle({
 					}
 					
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						
 
 						wait()
 
@@ -1092,6 +1105,7 @@ local spelllist = {"duro", "ebublio", "glacius", "impedimenta", "incarcerous", "
 local spell = ""
 local target = ""
 local autocomplete = ""
+local spelldelay = 0.5
 
 spl.TextField({
 	Text = "Spell Name",
@@ -1113,16 +1127,27 @@ local t = spl.TextField({
 	Menu = {
         Information = function(self)
             ui.Banner({
-                Text = "Put the Display Name of your Target, Also has Auto Complete Name (Use Auto Complete Button)"
+                Text = "Put the Display Name of your Target"
             })
         end
     }
 })
 
+local autostate = false
+
 spl.Button({
 	Text = "Auto Complete Target Name",
 	Callback = function()
 		t:SetText(autocomplete)
+	end
+})
+
+spl.TextField({
+	Text = "Auto Spell Delay (MUST BE GREATER THAN 0)",
+	Callback = function(s)
+		if s ~= 0 then
+			spelldelay = tonumber(s)
+		end
 	end
 })
 
@@ -1161,7 +1186,7 @@ spl.Toggle({
 			}
 			
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-			wait(0.5)
+			wait(spelldelay)
 		end
 	end
 })
@@ -1201,7 +1226,7 @@ spl.Toggle({
 			}
 			
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-			wait(0.5)
+			wait(spelldelay)
 		end
 	end
 })
