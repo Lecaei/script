@@ -464,17 +464,6 @@ local function antikick()
 		end end
 end
 
-local function autoclash()
-	while wait() do
-		local args = {
-			[1] = {
-				["distance"] = 178.04931658433
-			}
-		}
-
-		game:GetService("InsertService").Events.advanceClash:FireServer(unpack(args))
-	end
-end
 
 local function checkif()
 	for _,players in pairs(game.Players:GetPlayers()) do
@@ -577,12 +566,23 @@ main.Button({
     }
 })
 
-main.Button({
+local autoclashstate = false
+
+main.Toggle({
 	Text = "Auto Win Clashes",
-	Callback = function()
-		autoclash()
-		wait(0.1)
-		print("auto clash enabled")
+	Callback = function(s)
+		autoclashstate = s
+
+		while autoclashstate ~= false do
+			local args = {
+				[1] = {
+					["distance"] = 178.04931658433
+				}
+			}
+	
+			game:GetService("InsertService").Events.advanceClash:FireServer(unpack(args))
+			wait()
+		end		
 	end,
 	Menu = {
         Information = function(self)
@@ -593,9 +593,13 @@ main.Button({
     }
 })
 
-main.Button({
+local autoclashstate2 = false
+
+main.Toggle({
 	Text = "Auto Clash (More 'Legit' Way)",
-	Callback = function()
+	Callback = function(s)
+		autoclashstate2 = s
+
 		local Players = game:GetService("Players")
 		local RunService = game:GetService("RunService")
 
@@ -603,7 +607,7 @@ main.Button({
 		local PlayerGui = Player.PlayerGui
 
 		PlayerGui.DescendantAdded:Connect(function(Descendant)
-    		if Descendant.Name == "marker" then
+    		if Descendant.Name == "marker" and autoclashstate2 ~= false then
     	    	repeat
             	firesignal(Descendant.MouseButton1Click)
         		RunService.RenderStepped:Wait()
@@ -616,6 +620,34 @@ main.Button({
         Information = function(self)
             ui.Banner({
                 Text = "Clicks/Triggers the white circles to advance clashes"
+            })
+        end
+    }
+})
+
+local autobreak = false
+
+main.Toggle({
+	Text = "Auto Break Clashes",
+	Callback = function(s)
+		autobreak = s
+
+		local Players = game:GetService("Players")
+		local RunService = game:GetService("RunService")
+
+		local Player = Players.LocalPlayer
+		local PlayerGui = Player.PlayerGui
+
+		PlayerGui.DescendantAdded:Connect(function(Descendant)
+			if Descendant.Name == "marker" and autobreak ~= false then
+				Player.Character.Humanoid:UnequipTools()
+			end
+		end)
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Unequips your tool when a clash starts"
             })
         end
     }
