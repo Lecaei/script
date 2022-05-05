@@ -783,17 +783,29 @@ character.Toggle({
 					}
 					
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+						wait(0.25)
 						game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 						
 
@@ -1147,6 +1159,47 @@ misc.Button({
 	end
 })
 
+misc.Button({
+	Text = "Get Appa Teleport Tool",
+	Callback = function()
+		--Create tool
+		local tool = Instance.new("Tool")
+		local handle = Instance.new("Part")
+		local mouse = game.Players.LocalPlayer:GetMouse()
+		local mousep = mouse.Hit.Position
+		tool.Name = "Appa"
+		tool.Parent = game:GetService("Players").LocalPlayer.Backpack
+		tool.Enabled = true
+		handle.Name = "Handle"
+		handle.Parent = tool
+
+		
+	
+		--When Player Clicks With The Tool
+		tool.Activated:Connect(function()
+			print("tool clicked")
+			game.Players:Chat("appa")
+			local args = {
+				[1] = {
+					["distance"] = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - mousep).magnitude,
+					["mousePos"] = mousep,
+					["spellName"] = "appa"
+				}
+			}
+
+			game:GetService("InsertService").Events.uniqueSpell:FireServer(unpack(args))
+
+		end)
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Gives you a tool that allows you to teleport with Appa"
+            })
+        end
+    }
+})
+
 local infernumToggle = false
 
 fun.Toggle({
@@ -1181,7 +1234,7 @@ fun.Toggle({
 				}
 			}
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-			wait(0.5)
+			wait(0.25)
 		end	
 	end,
 })
@@ -1220,7 +1273,7 @@ fun.Toggle({
 				}
 			}
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-			wait(0.5)
+			wait(0.25)
 		end	
 	end
 })
@@ -1230,7 +1283,7 @@ local spelllist = {"duro", "ebublio", "glacius", "impedimenta", "incarcerous", "
 local spell = ""
 local target = ""
 local autocomplete = ""
-local spelldelay = 0.5
+local spelldelay = 0.25
 
 spl.TextField({
 	Text = "Spell Name",
@@ -1268,7 +1321,7 @@ spl.Button({
 })
 
 set.TextField({
-	Text = "Auto Spell Delay (MUST BE GREATER THAN 0)",
+	Text = "Auto Spell Delay (MUST BE EQUAL TO OR GREATER THAN 0.25)",
 	Callback = function(s)
 		if s ~= 0 then
 			spelldelay = tonumber(s)
