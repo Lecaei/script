@@ -53,17 +53,14 @@ end)
 -- ui
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/MaterialLua/master/Module.lua"))()
 
-local coloroverride = {}
 
 local ui = library.Load({
 	Title = "Magic Training",
 	Style = 1,
 	Theme = "Dark",
-	SizeX = 500,
+	SizeX = 500,	
 	SizeY = 350,
-	ColorOverrides = {
-        MainFrame = Color3.fromRGB(coloroverride)
-    }	
+	
 })
 
 local main = ui.New({Title = "Main"})
@@ -829,20 +826,6 @@ character.Toggle({
     }
 })
 
-misc.ColorPicker({
-	Text = "Main Theme Color",
-	Callback = function(colorstate)
-		table.insert(coloroverride, colorstate)		
-	end,
-	Menu = {
-        Information = function(self)
-            ui.Banner({
-                Text = "Wip, Not Working"
-            })
-        end
-    }
-})	
-
 local toggle = false 
 
 character.Toggle({
@@ -1373,23 +1356,29 @@ spl.Toggle({
 	end
 })
 
+local every = {}
+
 spl.Button({
 	Text = "Cast Spell on Everyone (Unstable)",
 	Callback = function()
 		game.Players:Chat(spell)
 
 		for _,plr in pairs(game.Players:GetPlayers()) do
-			if plr.UserId ~= yourself then
-				local args = {
-					[1] = {
-						["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
-						["actor"] = plr.Character,
-						["spellName"] = spell
-					}
-				}
-				
-				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			if plr.UserId ~= yourself and plr.Character and plr.Character.HumanoidRootPart and plr.Character.Humanoid.Health > 0 then
+				table.insert(every, plr)
 			end
+		end
+		wait()
+		for _,v in pairs(every) do
+			local args = {
+				[1] = {
+					["hitCf"] = v.Character.HumanoidRootPart.CFrame,
+					["actor"] = v.Character,
+					["spellName"] = spell
+				}
+			}
+			
+			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 		end
 	end
 })
@@ -1402,26 +1391,27 @@ spl.Toggle({
 		loopeveryone = s
 		
 		if loopeveryone ~= false then game.Players:Chat(spell) end
-
-		while loopeveryone ~= false do
-			for _,plr in pairs(game.Players:GetPlayers()) do
-				if plr.UserId ~= yourself then
-			
-					local args = {
-						[1] = {
-							["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
-							["actor"] = plr.Character,
-							["spellName"] = spell
-						}
-					}
-					
-					game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-				end
-			end
-			wait(spelldelay)
-		end
 	end
 })
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if loopeveryone ~= false then
+		for _, plr in pairs(game.Players:GetPlayers()) do
+			if plr.Character and plr.Character.HumanoidRootPart and plr.UserId ~= yourself and plr.Character.Humanoid.Health > 0 and loopeveryone ~= false then
+				local args = {
+					[1] = {
+						["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
+						["actor"] = plr.Character,
+						["spellName"] = spell
+					}
+				}
+				
+				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+				wait(spelldelay)
+			end
+		end
+	end
+end)
 
 set.Toggle({
 	Text = "Kick when Admin Joins",
@@ -1438,3 +1428,29 @@ set.Toggle({
 	end,
 	Enabled = true
 })
+
+local autochat = false
+local mes = ""
+
+set.Toggle({
+	Text = "Auto Uncapitalize Chat",
+	Callback = function(s)
+		autochat = s
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "Returns what you've chatted as a lower case version of it, useful when using the Public Wandless Script"
+            })
+        end	
+    },
+	Enabled = true
+})
+
+
+game.Players.LocalPlayer.Chatted:Connect(function(msg)
+	if autochat ~= false then
+		mes = string.lower(msg)
+		game.Players:Chat(mes)
+	end
+end)
