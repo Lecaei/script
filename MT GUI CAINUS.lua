@@ -61,6 +61,9 @@ local ui = library.Load({
 	Theme = "Dark",
 	SizeX = 500,
 	SizeY = 350,
+	ColorOverrides = {
+        MainFrame = Color3.fromRGB(coloroverride)
+    }	
 })
 
 local main = ui.New({Title = "Main"})
@@ -828,6 +831,9 @@ character.Toggle({
 
 misc.ColorPicker({
 	Text = "Main Theme Color",
+	Callback = function(colorstate)
+		table.insert(coloroverride, colorstate)		
+	end,
 	Menu = {
         Information = function(self)
             ui.Banner({
@@ -1016,6 +1022,8 @@ character.Toggle({
 	end
 })
 
+
+
 local godmodestate = false
 
 character.Toggle({
@@ -1135,7 +1143,7 @@ auras.Toggle({
 
 game:GetService("RunService").RenderStepped:Connect(function()
 	for _, player in pairs(game.Players:GetPlayers()) do
-		if player:DistanceFromCharacter(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) < 60 and aura1 ~= false and player.UserId ~= yourself then
+		if player:DistanceFromCharacter(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) < distance and aura1 ~= false and player.UserId ~= yourself and player.Character and player.Character.Humanoid.Health > 0 then
 			local args = {
 				[1] = {
 					["hitCf"] = player.Character.Head.CFrame,
@@ -1143,10 +1151,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					["spellName"] = spellaura
 				}
 			}
-			repeat
 				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
-				wait(0.25)
-			until aura1 ~= true or player:DistanceFromCharacter(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) < distance or player.Character.Humanoid.Health == 0 or not player.Character
+				wait()
 		end
 	end
 end)
@@ -1195,13 +1201,6 @@ fun.Toggle({
 			wait(0.5)
 		end	
 	end,
-	Menu = {
-        Information = function(self)
-            ui.Banner({
-                Text = "Run Public Wandless Script First"
-            })
-        end
-    }
 })
 
 local pruinaToggle = false
@@ -1240,14 +1239,7 @@ fun.Toggle({
 			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
 			wait(0.5)
 		end	
-	end,
-	Menu = {
-        Information = function(self)
-            ui.Banner({
-                Text = "Run Public Wandless Script First"
-            })
-        end
-    }
+	end
 })
 
 local spelllist = {"duro", "ebublio", "glacius", "impedimenta", "incarcerous", "levicorpus", "locomotor wibbly", "petrificus totalus", }
@@ -1267,8 +1259,8 @@ spl.TextField({
 local t = spl.TextField({
 	Text = "Target Name",
 	Callback = function(s)
-		for i,v in pairs(game.Players:GetPlayers()) do  -- iterating though players
-			if v.DisplayName:lower():sub(1,#s) == s:lower() then	-- checking to see if player name matches the provided string
+		for i,v in pairs(game.Players:GetPlayers()) do 
+			if v.DisplayName:lower():sub(1,#s) == s:lower() then	
 				target = v
 				autocomplete = v.DisplayName
 			end
@@ -1387,15 +1379,17 @@ spl.Button({
 		game.Players:Chat(spell)
 
 		for _,plr in pairs(game.Players:GetPlayers()) do
-			local args = {
-				[1] = {
-					["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
-					["actor"] = plr.Character,
-					["spellName"] = spell
+			if plr.UserId ~= yourself then
+				local args = {
+					[1] = {
+						["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
+						["actor"] = plr.Character,
+						["spellName"] = spell
+					}
 				}
-			}
-			
-			game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+				
+				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+			end
 		end
 	end
 })
@@ -1411,15 +1405,18 @@ spl.Toggle({
 
 		while loopeveryone ~= false do
 			for _,plr in pairs(game.Players:GetPlayers()) do
-				local args = {
-					[1] = {
-						["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
-						["actor"] = plr.Character,
-						["spellName"] = spell
+				if plr.UserId ~= yourself then
+			
+					local args = {
+						[1] = {
+							["hitCf"] = plr.Character.HumanoidRootPart.CFrame,
+							["actor"] = plr.Character,
+							["spellName"] = spell
+						}
 					}
-				}
-				
-				game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+					
+					game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+				end
 			end
 			wait(spelldelay)
 		end
