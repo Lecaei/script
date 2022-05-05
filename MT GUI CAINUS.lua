@@ -73,24 +73,6 @@ local misc = ui.New({Title = "Misc"})
 local set = ui.New({Title = "Settings"})
 --
 
-local function spamwand()
-	--[[ BY NAMELESS#9000 ]]
-
-local module = require(game:GetService("ReplicatedStorage").Modules.spellModule);
-
-local Settings = {
-	coolDown = 0, 
-	speed = 9000, 
-	range = 9000
-}
-
-
-for _,Spell in pairs(module.projectileData) do 
-	for Name,Value in pairs(Settings) do 
-		Spell[Name] = Value
-	end
-end
-
 function op()
 	wait(.25)
 	for _,v in pairs(getreg()) do
@@ -169,9 +151,7 @@ end
 op()
 game.Players.LocalPlayer.Backpack.ChildAdded:Connect(op)
 game.Players.LocalPlayer.CharacterAdded:Connect(op)
-return module;
 
-end	
 
 local function opthingy()
 	-- Farewell Infortality.
@@ -550,22 +530,6 @@ main.Button({
 	end,
 })
 
-main.Button({
-	Text = "Anti Kick",
-	Callback = function()
-		antikick()
-		wait(0.1)
-		print("anti kick enabled")
-	end,
-	Menu = {
-        Information = function(self)
-            ui.Banner({
-                Text = "THIS NEEDS TO BE ACTIVATED TO RUN MOST FEATURES"
-            })
-        end
-    }
-})
-
 local autoclashstate = false
 
 main.Toggle({
@@ -671,13 +635,6 @@ main.Button({
 	Text = "MT Loop Kill Gui",
 	Callback = function()
 		opthingy()
-	end,
-})
-
-main.Button({
-	Text = "Spam Wand",
-	Callback = function()
-		spamwand()
 	end,
 })
 
@@ -1200,6 +1157,59 @@ misc.Button({
     }
 })
 
+local mc
+local cd 
+local sd
+local rng
+
+misc.TextField({
+	Text = "Spell Max Casts (MUST BE A NUMBER, UNSTABLE)",
+	Callback = function(s)
+		cd = s
+	end
+})
+
+misc.TextField({
+	Text = "Spell Cooldown (MUST BE A NUMBER, UNSTABLE)",
+	Callback = function(s)
+		cd = s
+	end
+})
+
+misc.TextField({
+	Text = "Spell Speed (MUST BE A NUMBER, UNSTABLE)",
+	Callback = function(s)
+		sd = s
+	end
+})
+
+misc.TextField({
+	Text = "Spell Range (MUST BE A NUMBER, UNSTABLE)",
+	Callback = function(s)
+		rng = s
+	end
+})
+
+local module = require(game:GetService("ReplicatedStorage").Modules.spellModule);
+
+local Settings = {
+	maxCasts = mc,
+	coolDown = cd, 
+	speed = sd, 
+	range = rng
+	
+}
+
+
+if mc or cd or sd or rng then
+	for _,Spell in pairs(module.projectileData) do 
+		for Name,Value in pairs(Settings) do 
+			Spell[Name] = Value
+		end
+	end
+end
+
+
 local infernumToggle = false
 
 fun.Toggle({
@@ -1277,6 +1287,31 @@ fun.Toggle({
 		end	
 	end
 })
+
+local protegowalk = false
+
+fun.Toggle({
+	Text = "Protego Walk",
+	Callback = function(s)
+		protegowalk = s
+		if protegowalk ~= false then game.Players:Chat("protego") end
+	end,
+})
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if protegowalk ~= false then
+		local args = {
+			[1] = {
+				["hitCf"] =	game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame,
+				["actor"] = game:GetService("Players").LocalPlayer.Character,
+				["spellName"] = "protego"
+			}
+		}
+
+		game:GetService("InsertService").Events.spellHit:FireServer(unpack(args))
+
+	end
+end)
 
 local spelllist = {"duro", "ebublio", "glacius", "impedimenta", "incarcerous", "levicorpus", "locomotor wibbly", "petrificus totalus", }
 
@@ -1482,7 +1517,7 @@ set.Toggle({
 	Enabled = true
 })
 
-local autochat = false
+local autochat = true
 local mes = ""
 
 set.Toggle({
@@ -1507,3 +1542,25 @@ game.Players.LocalPlayer.Chatted:Connect(function(msg)
 		game.Players:Chat(mes)
 	end
 end)
+
+local ak = true
+
+set.Toggle({
+	Text = "Anti Kick",
+	Callback = function(s)
+		ak = s
+		if ak ~= false then
+			antikick()
+			wait(0.1)
+			print("anti kick enabled")
+		end
+	end,
+	Menu = {
+        Information = function(self)
+            ui.Banner({
+                Text = "THIS NEEDS TO BE ACTIVATED TO RUN MOST FEATURES, You can't turn this off as of now"
+            })
+        end
+    },
+	Enabled = true
+})
